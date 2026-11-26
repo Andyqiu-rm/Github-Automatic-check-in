@@ -2,27 +2,31 @@ name: Daily Checkin with Python
 
 on:
   schedule:
-    - cron: '30 1 * * *'  # UTC 01:30（北京时间 9:30）
-  workflow_dispatch:      # 允许手动触发
+    # 以下 cron 按北京时间解释，与 v2free-check-in 保持一致
+    - cron: '7 7 * * *'
+      timezone: Asia/Shanghai
+    - cron: '7 11 * * *'
+      timezone: Asia/Shanghai
+    - cron: '7 15 * * *'
+      timezone: Asia/Shanghai
+  workflow_dispatch: # 允许手动触发
 
 jobs:
   checkin:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # 允许写入仓库
+      contents: write # 允许写入仓库
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0  # 拉取完整提交历史
+          fetch-depth: 0 # 拉取完整提交历史
           token: ${{ secrets.DAILY_CHECKIN }}
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Run Python Script
         env:
-          GITHUB_TOKEN: ${{ secrets.DAILY_CHECKIN }}  # 将 token 设置为环境变量
+          GITHUB_TOKEN: ${{ secrets.DAILY_CHECKIN }} # 将 token 设置为环境变量
         run: python checkin.py
